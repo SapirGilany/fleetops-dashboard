@@ -101,16 +101,13 @@ function App() {
         </div>
 
         <div style={styles.card}>
-          <div style={styles.cardLabel}>TOTAL ROBOTS</div>
-          <div style={styles.cardValue}>
-            {system?.totalRobots ?? robots.length}
-          </div>
-        </div>
-
-        <div style={styles.card}>
           <div style={styles.cardLabel}>AVAILABLE ROBOTS</div>
+
           <div style={styles.cardValue}>
             {system?.availableRobots ?? 0}
+            <span style={styles.cardSubValue}>
+              / {system?.totalRobots ?? robots.length}
+            </span>
           </div>
         </div>
 
@@ -217,5 +214,12 @@ const styles: Record<string, React.CSSProperties> = {
   cardValue: {
     fontSize: 28,
     fontWeight: 700,
+  },
+
+  cardSubValue: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: "#94a3b8",
+    marginLeft: 6,
   },
 };
