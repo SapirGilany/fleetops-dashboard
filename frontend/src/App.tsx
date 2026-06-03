@@ -71,14 +71,30 @@ function App() {
     <div style={styles.page}>
       {/* HEADER */}
       <div style={styles.header}>
-        <h2>🚀 FleetOps Dashboard</h2>
+        <h2>FleetOps Dashboard</h2>
 
         <div style={styles.buttons}>
-          <button style={styles.startBtn} onClick={handleStart}>
+          <button
+            style={{
+              ...styles.startBtn,
+              opacity: isRunning ? 0.5 : 1,
+              cursor: isRunning ? "not-allowed" : "pointer",
+            }}
+            onClick={handleStart}
+            disabled={isRunning}
+          >
             Start
           </button>
 
-          <button style={styles.resetBtn} onClick={handleReset}>
+          <button
+            style={{
+              ...styles.resetBtn,
+              opacity: !isRunning ? 0.5 : 1,
+              cursor: !isRunning ? "not-allowed" : "pointer",
+            }}
+            onClick={handleReset}
+            disabled={!isRunning}
+          >
             Reset
           </button>
         </div>
