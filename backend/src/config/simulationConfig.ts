@@ -5,7 +5,7 @@ export const simulationConfig = {
   },
 
   fleet: {
-    size: 100,
+    size: 5,
   },
 
   robotTimings: {
