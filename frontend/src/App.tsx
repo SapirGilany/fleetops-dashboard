@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   fetchRobots,
   fetchSystem,
@@ -6,29 +6,36 @@ import {
   resetSimulation,
 } from "./api/fleetApi";
 
+import RobotsTable from "./components/RobotsTable";
+
 function App() {
   const [robots, setRobots] = useState<any[]>([]);
   const [system, setSystem] = useState<any>({ pendingMissions: 0 });
   const [isRunning, setIsRunning] = useState(false);
 
-  // חשוב מאוד לפולינג
   const isRunningRef = useRef(false);
 
+  // -------------------------
+  // DATA LOADER (single source of truth)
+  // -------------------------
+  const loadData = useCallback(async () => {
+    try {
+      const [robotsData, systemData] = await Promise.all([
+        fetchRobots(),
+        fetchSystem(),
+      ]);
+
+      setRobots(robotsData ?? []);
+      setSystem(systemData ?? { pendingMissions: 0 });
+    } catch (err) {
+      console.error("Failed to load data:", err);
+    }
+  }, []);
+
+  // -------------------------
+  // INIT + POLLING
+  // -------------------------
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [robotsData, systemData] = await Promise.all([
-          fetchRobots(),
-          fetchSystem(),
-        ]);
-
-        setRobots(robotsData ?? []);
-        setSystem(systemData ?? { pendingMissions: 0 });
-      } catch (err) {
-        console.error("Failed to load data:", err);
-      }
-    };
-
     loadData();
 
     const interval = window.setInterval(() => {
@@ -38,8 +45,11 @@ function App() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [loadData]);
 
+  // -------------------------
+  // ACTIONS
+  // -------------------------
   const handleStart = async () => {
     await startSimulation();
     isRunningRef.current = true;
@@ -50,10 +60,14 @@ function App() {
     await resetSimulation();
     isRunningRef.current = false;
     setIsRunning(false);
+
     setRobots([]);
     setSystem({ pendingMissions: 0 });
   };
 
+  // -------------------------
+  // UI
+  // -------------------------
   return (
     <div style={styles.page}>
       {/* HEADER */}
@@ -71,7 +85,7 @@ function App() {
         </div>
       </div>
 
-      {/* STATUS */}
+      {/* STATUS BAR */}
       <div style={styles.statusBar}>
         <span>
           Status:{" "}
@@ -84,34 +98,8 @@ function App() {
         <span>Missions: {system?.pendingMissions ?? 0}</span>
       </div>
 
-      {/* TABLE */}
-      <div style={styles.tableBox}>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={thStyle}>ID</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle}>Mission</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {robots.map((r) => (
-              <tr key={r.id} style={rowStyle}>
-                <td style={tdStyle}>{r.id}</td>
-
-                <td style={tdStyle}>
-                  <span style={getStatusStyle(r.status)}>
-                    {r.status ?? "unknown"}
-                  </span>
-                </td>
-
-                <td style={tdStyle}>{r.missionId ?? "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* TABLE (now clean component) */}
+      <RobotsTable robots={robots} onRefresh={loadData} />
     </div>
   );
 }
@@ -127,6 +115,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: "white",
     minHeight: "100vh",
     padding: 20,
+    boxSizing: "border-box",
   },
 
   header: {
@@ -167,49 +156,4 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 8,
     marginBottom: 20,
   },
-
-  tableBox: {
-    background: "#111827",
-    padding: 16,
-    borderRadius: 10,
-  },
-
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
 };
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: 10,
-  borderBottom: "1px solid #1f2937",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: 10,
-  borderTop: "1px solid #1f2937",
-};
-
-const rowStyle: React.CSSProperties = {
-  transition: "0.2s",
-};
-
-/* status colors */
-function getStatusStyle(status?: string): React.CSSProperties {
-  const map: Record<string, string> = {
-    idle: "#94a3b8",
-    assigned: "#38bdf8",
-    en_route: "#f59e0b",
-    delivering: "#a78bfa",
-    completed: "#22c55e",
-  };
-
-  return {
-    padding: "4px 8px",
-    borderRadius: 6,
-    background: map[status || ""] || "#64748b",
-    color: "black",
-    fontSize: 12,
-  };
-}
