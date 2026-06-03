@@ -23,7 +23,7 @@ export const resetSimulation = async () => {
 }
 
 export async function cancelRobotMission(robotId: string) {
-  const res = await fetch(`http://localhost:3000/robots/${robotId}/cancel`, {
+  const res = await fetch(`http://localhost:3001/robots/${robotId}/cancel`, {
     method: "POST",
   });
 
