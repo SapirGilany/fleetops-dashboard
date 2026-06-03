@@ -61,8 +61,7 @@ function App() {
     isRunningRef.current = false;
     setIsRunning(false);
 
-    setRobots([]);
-    setSystem({ pendingMissions: 0 });
+    await loadData();
   };
 
   // -------------------------
