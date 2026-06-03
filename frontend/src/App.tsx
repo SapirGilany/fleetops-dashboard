@@ -43,17 +43,14 @@ function App() {
 
   const handleStart = async () => {
     await startSimulation();
-
     isRunningRef.current = true;
     setIsRunning(true);
   };
 
   const handleReset = async () => {
     await resetSimulation();
-
     isRunningRef.current = false;
     setIsRunning(false);
-
     await loadData();
   };
 
@@ -89,6 +86,7 @@ function App() {
         </div>
       </div>
 
+      {/* SYSTEM STATS */}
       <div style={styles.statsGrid}>
         <div style={styles.card}>
           <div style={styles.cardLabel}>STATUS</div>
@@ -116,10 +114,15 @@ function App() {
           </div>
         </div>
 
+        
+      </div>
+
+      {/* MISSIONS STATS (separate row) */}
+      <div style={styles.statsGrid}>
         <div style={styles.card}>
-          <div style={styles.cardLabel}>BUSY ROBOTS</div>
+          <div style={styles.cardLabel}>TOTAL MISSIONS</div>
           <div style={styles.cardValue}>
-            {system?.busyRobots ?? 0}
+            {system?.totalMissions ?? 0}
           </div>
         </div>
 
@@ -145,10 +148,7 @@ function App() {
         </div>
       </div>
 
-      <RobotsTable
-        robots={robots}
-        onRefresh={loadData}
-      />
+      <RobotsTable robots={robots} onRefresh={loadData} />
     </div>
   );
 }
@@ -169,7 +169,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 20,
   },
 
   buttons: {
@@ -183,7 +183,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: "none",
     color: "white",
     borderRadius: 6,
-    cursor: "pointer",
   },
 
   resetBtn: {
@@ -192,14 +191,13 @@ const styles: Record<string, React.CSSProperties> = {
     border: "none",
     color: "white",
     borderRadius: 6,
-    cursor: "pointer",
   },
 
   statsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
     gap: 16,
-    marginBottom: 24,
+    marginBottom: 16,
   },
 
   card: {
@@ -207,19 +205,16 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid #1f2937",
     borderRadius: 14,
     padding: 18,
-    boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
   },
 
   cardLabel: {
     color: "#94a3b8",
     fontSize: 11,
-    fontWeight: 600,
     letterSpacing: "0.12em",
     marginBottom: 10,
   },
 
   cardValue: {
-    color: "#f8fafc",
     fontSize: 28,
     fontWeight: 700,
   },
