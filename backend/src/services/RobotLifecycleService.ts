@@ -1,8 +1,9 @@
 import { simulationConfig } from "../config/simulationConfig.js";
-import { availableRobots, robots } from "../data/store.js";
+import { availableRobots, robots, stats } from "../data/store.js";
 import type { Mission } from "../types/mission.js";
 import type { Robot } from "../types/robot.js";
 import { log } from "../utils/logger.js";
+
 
 export class RobotLifecycleService {
   private timeouts = new Set<NodeJS.Timeout>();
@@ -98,6 +99,8 @@ export class RobotLifecycleService {
       startedAt: Date.now(),
       durationMs: duration,
     };
+
+    stats.completedMissions++;
 
     robot.currentTimeout = this.registerTimeout(
       setTimeout(() => {

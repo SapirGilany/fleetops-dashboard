@@ -10,14 +10,11 @@ import RobotsTable from "./components/RobotsTable";
 
 function App() {
   const [robots, setRobots] = useState<any[]>([]);
-  const [system, setSystem] = useState<any>({ pendingMissions: 0 });
+  const [system, setSystem] = useState<any>({});
   const [isRunning, setIsRunning] = useState(false);
 
   const isRunningRef = useRef(false);
 
-  // -------------------------
-  // DATA LOADER (single source of truth)
-  // -------------------------
   const loadData = useCallback(async () => {
     try {
       const [robotsData, systemData] = await Promise.all([
@@ -26,15 +23,12 @@ function App() {
       ]);
 
       setRobots(robotsData ?? []);
-      setSystem(systemData ?? { pendingMissions: 0 });
+      setSystem(systemData ?? {});
     } catch (err) {
       console.error("Failed to load data:", err);
     }
   }, []);
 
-  // -------------------------
-  // INIT + POLLING
-  // -------------------------
   useEffect(() => {
     loadData();
 
@@ -47,29 +41,24 @@ function App() {
     return () => clearInterval(interval);
   }, [loadData]);
 
-  // -------------------------
-  // ACTIONS
-  // -------------------------
   const handleStart = async () => {
     await startSimulation();
+
     isRunningRef.current = true;
     setIsRunning(true);
   };
 
   const handleReset = async () => {
     await resetSimulation();
+
     isRunningRef.current = false;
     setIsRunning(false);
 
     await loadData();
   };
 
-  // -------------------------
-  // UI
-  // -------------------------
   return (
     <div style={styles.page}>
-      {/* HEADER */}
       <div style={styles.header}>
         <h2>FleetOps Dashboard</h2>
 
@@ -100,28 +89,71 @@ function App() {
         </div>
       </div>
 
-      {/* STATUS BAR */}
-      <div style={styles.statusBar}>
-        <span>
-          Status:{" "}
-          <b style={{ color: isRunning ? "#22c55e" : "#ef4444" }}>
+      <div style={styles.statsGrid}>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>STATUS</div>
+          <div
+            style={{
+              ...styles.cardValue,
+              color: isRunning ? "#22c55e" : "#ef4444",
+            }}
+          >
             {isRunning ? "RUNNING" : "STOPPED"}
-          </b>
-        </span>
+          </div>
+        </div>
 
-        <span>Robots: {robots.length}</span>
-        <span>Missions: {system?.pendingMissions ?? 0}</span>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>TOTAL ROBOTS</div>
+          <div style={styles.cardValue}>
+            {system?.totalRobots ?? robots.length}
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>AVAILABLE ROBOTS</div>
+          <div style={styles.cardValue}>
+            {system?.availableRobots ?? 0}
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>BUSY ROBOTS</div>
+          <div style={styles.cardValue}>
+            {system?.busyRobots ?? 0}
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>ACTIVE MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.activeMissions ?? 0}
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>PENDING MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.pendingMissions ?? 0}
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>COMPLETED MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.completedMissions ?? 0}
+          </div>
+        </div>
       </div>
 
-      {/* TABLE (now clean component) */}
-      <RobotsTable robots={robots} onRefresh={loadData} />
+      <RobotsTable
+        robots={robots}
+        onRefresh={loadData}
+      />
     </div>
   );
 }
 
 export default App;
-
-/* ---------------- styles ---------------- */
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
@@ -137,7 +169,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 24,
   },
 
   buttons: {
@@ -163,12 +195,32 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
   },
 
-  statusBar: {
-    display: "flex",
-    gap: 20,
-    padding: 12,
+  statsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    gap: 16,
+    marginBottom: 24,
+  },
+
+  card: {
     background: "#111827",
-    borderRadius: 8,
-    marginBottom: 20,
+    border: "1px solid #1f2937",
+    borderRadius: 14,
+    padding: 18,
+    boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+  },
+
+  cardLabel: {
+    color: "#94a3b8",
+    fontSize: 11,
+    fontWeight: 600,
+    letterSpacing: "0.12em",
+    marginBottom: 10,
+  },
+
+  cardValue: {
+    color: "#f8fafc",
+    fontSize: 28,
+    fontWeight: 700,
   },
 };

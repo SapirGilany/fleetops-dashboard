@@ -9,9 +9,14 @@ export const availableRobots: string[] = [];
 
 export const pendingMissions: Mission[] = [];
 
+export const stats = {
+  completedMissions: 0,
+};
+
 export const resetStore = () => {
   robots.clear();
   missions.clear();
   availableRobots.length = 0;
   pendingMissions.length = 0;
+  stats.completedMissions = 0;
 };
