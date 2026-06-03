@@ -148,6 +148,8 @@ export class RobotLifecycleService {
       durationMs: 0,
     };
 
+    stats.cancelledMissions++;
+
     log("INFO", `Robot ${robot.id} -> idle`);
 
     availableRobots.push(robot.id);

@@ -22,6 +22,7 @@ export class MissionService {
     missions.clear();
     missionCounter = 1;
     stats.completedMissions = 0;
+    stats.cancelledMissions = 0;
   }
 }
 

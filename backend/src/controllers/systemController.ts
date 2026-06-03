@@ -23,6 +23,7 @@ export class SystemController {
       totalMissions: missions.size,
       activeMissions,
       pendingMissions: pendingMissions.length,
+      cancelledMissions: stats.cancelledMissions,
       completedMissions: stats.completedMissions,
     };
   }

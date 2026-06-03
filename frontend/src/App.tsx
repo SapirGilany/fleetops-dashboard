@@ -138,6 +138,13 @@ function App() {
         </div>
 
         <div style={styles.card}>
+          <div style={styles.cardLabel}>CANCELLED MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.cancelledMissions ?? 0}
+          </div>
+        </div>
+
+        <div style={styles.card}>
           <div style={styles.cardLabel}>COMPLETED MISSIONS</div>
           <div style={styles.cardValue}>
             {system?.completedMissions ?? 0}
