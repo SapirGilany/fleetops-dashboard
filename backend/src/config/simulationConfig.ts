@@ -5,7 +5,8 @@ export const simulationConfig = {
   },
 
   fleet: {
-    size: 5,
+    size: 100, // number of robots in the fleet
+    fleetOptions: [5, 10, 20, 50, 80, 100],
   },
 
   robotTimings: {

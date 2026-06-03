@@ -1,13 +1,5 @@
 import { cancelRobotMission } from "../api/fleetApi";
-
-type Robot = {
-  id: string;
-  missionId: string | null;
-  state: {
-    status: "idle" | "assigned" | "en_route" | "delivering" | "completed";
-  };
-  remainingTimeMs: number;
-};
+import type { Robot } from "../types/robot";
 
 type Props = {
   robots: Robot[];

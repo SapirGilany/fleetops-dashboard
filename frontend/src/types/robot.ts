@@ -9,8 +9,14 @@ export interface Robot {
 }
 
 export interface SystemStatus {
-  totalRobots: number;
-  availableRobots: number;
-  busyRobots: number;
-  pendingMissions: number;
+  totalRobots?: number;
+  availableRobots?: number;
+  busyRobots?: number;
+  pendingMissions?: number;
+  fleetSize?: number;
+  fleetOptions?: number[];
+  totalMissions?: number;
+  activeMissions?: number;
+  cancelledMissions?: number;
+  completedMissions?: number;
 }

@@ -7,11 +7,15 @@ import {
 } from "./api/fleetApi";
 
 import RobotsTable from "./components/RobotsTable";
+import type { Robot } from "./types/robot";
+import type { SystemStatus } from "./types/robot";
 
 function App() {
-  const [robots, setRobots] = useState<any[]>([]);
-  const [system, setSystem] = useState<any>({});
+  const [robots, setRobots] = useState<Robot[]>([]);
+  const [system, setSystem] = useState<SystemStatus>({});
   const [isRunning, setIsRunning] = useState(false);
+
+  const [fleetSize, setFleetSize] = useState<number | null>(null);
 
   const isRunningRef = useRef(false);
 
@@ -24,6 +28,9 @@ function App() {
 
       setRobots(robotsData ?? []);
       setSystem(systemData ?? {});
+      if (fleetSize === null) {
+        setFleetSize(systemData.fleetSize);
+      }
     } catch (err) {
       console.error("Failed to load data:", err);
     }
@@ -41,11 +48,16 @@ function App() {
     return () => clearInterval(interval);
   }, [loadData]);
 
-  const handleStart = async () => {
-    await startSimulation();
-    isRunningRef.current = true;
-    setIsRunning(true);
-  };
+const handleStart = async () => {
+  if (fleetSize === null) return;
+
+  await startSimulation(fleetSize);
+
+  isRunningRef.current = true;
+  setIsRunning(true);
+
+  await loadData();
+};
 
   const handleReset = async () => {
     await resetSimulation();
@@ -60,6 +72,26 @@ function App() {
         <h2>FleetOps Dashboard</h2>
 
         <div style={styles.buttons}>
+          <select
+              value={fleetSize ?? ""}
+              onChange={(e) =>
+                setFleetSize(Number(e.target.value))
+              }
+              disabled={isRunning}
+            >
+              {(system?.fleetOptions ?? []).map(
+                (size: number) => (
+                  <option
+                    key={size}
+                    value={size}
+                  >
+                    {size} robots
+                  </option>
+                )
+              )}
+            </select>
+
+
           <button
             style={{
               ...styles.startBtn,

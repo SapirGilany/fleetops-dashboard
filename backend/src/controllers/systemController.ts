@@ -1,3 +1,4 @@
+import { simulationConfig } from "../config/simulationConfig.js";
 import {
   availableRobots,
   pendingMissions,
@@ -25,6 +26,8 @@ export class SystemController {
       pendingMissions: pendingMissions.length,
       cancelledMissions: stats.cancelledMissions,
       completedMissions: stats.completedMissions,
+      fleetSize: simulationConfig.fleet.size,
+      fleetOptions: simulationConfig.fleet.fleetOptions,
     };
   }
 }
