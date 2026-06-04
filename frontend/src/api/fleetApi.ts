@@ -10,9 +10,17 @@ export async function fetchSystem() {
   return res.json();
 }
 
-export async function startSimulation() {
+export async function startSimulation(
+  fleetSize: number
+) {
   await fetch(`${API_URL}/simulation/start`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      fleetSize,
+    }),
   });
 }
 

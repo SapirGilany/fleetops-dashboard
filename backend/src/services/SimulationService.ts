@@ -94,18 +94,12 @@ export class SimulationService {
    * is stored in the pending queue.
    */
   private assignMission() {
+    const mission = missionService.createMission();
+
     const robotId = availableRobots.shift();
 
-    /**
-     * No free robot -> queue the mission.
-     */
     if (!robotId) {
-      pendingMissions.push({
-        id: crypto.randomUUID(),
-        createdAt: Date.now(),
-        robotId: "",
-      });
-
+      pendingMissions.push(mission);
       return;
     }
 
@@ -115,8 +109,7 @@ export class SimulationService {
       return;
     }
 
-    const mission =
-      missionService.createMission(robot.id);
+    mission.robotId = robot.id;
 
     robotLifecycleService.startMission(
       robot,
@@ -125,32 +118,6 @@ export class SimulationService {
 
     log("INFO", `Assigned ${mission.id} -> ${robot.id}`);
 
-  }
-
-  /**
-   * Called whenever a robot becomes available.
-   * Pulls the next waiting mission if one exists.
-   */
-  assignPendingMission(robotId: string) {
-    const pendingMission =
-      pendingMissions.shift();
-
-    if (!pendingMission) {
-      return;
-    }
-
-    const robot = robots.get(robotId);
-
-    if (!robot) {
-      return;
-    }
-
-    pendingMission.robotId = robot.id;
-
-    robotLifecycleService.startMission(
-      robot,
-      pendingMission
-    );
   }
 
   getSystemStats() {

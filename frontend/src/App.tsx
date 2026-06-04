@@ -7,11 +7,15 @@ import {
 } from "./api/fleetApi";
 
 import RobotsTable from "./components/RobotsTable";
+import type { Robot } from "./types/robot";
+import type { SystemStatus } from "./types/robot";
 
 function App() {
-  const [robots, setRobots] = useState<any[]>([]);
-  const [system, setSystem] = useState<any>({});
+  const [robots, setRobots] = useState<Robot[]>([]);
+  const [system, setSystem] = useState<SystemStatus>({});
   const [isRunning, setIsRunning] = useState(false);
+
+  const [fleetSize, setFleetSize] = useState<number | null>(null);
 
   const isRunningRef = useRef(false);
 
@@ -24,6 +28,9 @@ function App() {
 
       setRobots(robotsData ?? []);
       setSystem(systemData ?? {});
+      if (fleetSize === null) {
+        setFleetSize(systemData.fleetSize);
+      }
     } catch (err) {
       console.error("Failed to load data:", err);
     }
@@ -41,11 +48,16 @@ function App() {
     return () => clearInterval(interval);
   }, [loadData]);
 
-  const handleStart = async () => {
-    await startSimulation();
-    isRunningRef.current = true;
-    setIsRunning(true);
-  };
+const handleStart = async () => {
+  if (fleetSize === null) return;
+
+  await startSimulation(fleetSize);
+
+  isRunningRef.current = true;
+  setIsRunning(true);
+
+  await loadData();
+};
 
   const handleReset = async () => {
     await resetSimulation();
@@ -101,7 +113,28 @@ function App() {
         </div>
 
         <div style={styles.card}>
-          <div style={styles.cardLabel}>AVAILABLE ROBOTS</div>
+          <div style={styles.cardHeader}>
+            <div style={styles.cardLabel}>
+              AVAILABLE ROBOTS
+            </div>
+
+            <select
+              value={fleetSize ?? ""}
+              onChange={(e) =>
+                setFleetSize(Number(e.target.value))
+              }
+              disabled={isRunning}
+              style={styles.fleetSelect}
+            >
+              {(system?.fleetOptions ?? []).map(
+                (size: number) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
 
           <div style={styles.cardValue}>
             {system?.availableRobots ?? 0}
@@ -110,7 +143,6 @@ function App() {
             </span>
           </div>
         </div>
-
         
       </div>
 
@@ -228,5 +260,23 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 500,
     color: "#94a3b8",
     marginLeft: 6,
+  },
+
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+
+  fleetSelect: {
+    background: "#1f2937",
+    color: "#f8fafc",
+    border: "1px solid #374151",
+    borderRadius: 8,
+    padding: "4px 10px",
+    fontSize: 12,
+    cursor: "pointer",
+    outline: "none",
   },
 };

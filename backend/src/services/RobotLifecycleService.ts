@@ -2,11 +2,18 @@ import { simulationConfig } from "../config/simulationConfig.js";
 import { availableRobots, robots, stats } from "../data/store.js";
 import type { Mission } from "../types/mission.js";
 import type { Robot } from "../types/robot.js";
+import { isCancellableStatus } from "../types/robot.js";
 import { log } from "../utils/logger.js";
+import { simulationService } from "./SimulationService.js";
 
 
 export class RobotLifecycleService {
   private timeouts = new Set<NodeJS.Timeout>();
+
+  private onRobotAvailable?: (
+    robotId: string
+  ) => void;
+
   /**
    * Starts a mission lifecycle for a specific robot.
    */
@@ -125,14 +132,20 @@ export class RobotLifecycleService {
 
     log("INFO", `Robot ${robot.id} -> idle`);
 
-    availableRobots.push(robot.id);
+    this.onRobotAvailable?.(robot.id);
+  }
+
+  setRobotAvailableHandler(
+    handler: (robotId: string) => void
+  ) {
+    this.onRobotAvailable = handler;
   }
 
   /**
    * Cancels the current mission immediately.
    */
   cancelMission(robot: Robot) {
-    if (robot.state.status === "idle") {
+    if (!isCancellableStatus(robot.state.status)) {
       return;
     }
 
@@ -150,9 +163,11 @@ export class RobotLifecycleService {
 
     stats.cancelledMissions++;
 
+    log("WARN", `Robot ${robot.id} -> mission cancelled`);
+
     log("INFO", `Robot ${robot.id} -> idle`);
 
-    availableRobots.push(robot.id);
+    this.onRobotAvailable?.(robot.id);
   }
 
   private registerTimeout(timeout: ReturnType<typeof setTimeout>) {

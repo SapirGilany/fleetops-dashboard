@@ -9,9 +9,16 @@ const router = Router();
 /**
  * Start simulation
  */
-router.post("/start", (_req, res) => {
+router.post("/start", (req, res) => {
+  const { fleetSize } = req.body;
+
+  robotService.resetFleet(fleetSize);
+
   simulationService.start();
-  res.json({ status: "started" });
+
+  res.json({
+    status: "started",
+  });
 });
 
 /**
