@@ -72,26 +72,6 @@ const handleStart = async () => {
         <h2>FleetOps Dashboard</h2>
 
         <div style={styles.buttons}>
-          <select
-              value={fleetSize ?? ""}
-              onChange={(e) =>
-                setFleetSize(Number(e.target.value))
-              }
-              disabled={isRunning}
-            >
-              {(system?.fleetOptions ?? []).map(
-                (size: number) => (
-                  <option
-                    key={size}
-                    value={size}
-                  >
-                    {size} robots
-                  </option>
-                )
-              )}
-            </select>
-
-
           <button
             style={{
               ...styles.startBtn,
@@ -133,7 +113,28 @@ const handleStart = async () => {
         </div>
 
         <div style={styles.card}>
-          <div style={styles.cardLabel}>AVAILABLE ROBOTS</div>
+          <div style={styles.cardHeader}>
+            <div style={styles.cardLabel}>
+              AVAILABLE ROBOTS
+            </div>
+
+            <select
+              value={fleetSize ?? ""}
+              onChange={(e) =>
+                setFleetSize(Number(e.target.value))
+              }
+              disabled={isRunning}
+              style={styles.fleetSelect}
+            >
+              {(system?.fleetOptions ?? []).map(
+                (size: number) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
 
           <div style={styles.cardValue}>
             {system?.availableRobots ?? 0}
@@ -142,7 +143,6 @@ const handleStart = async () => {
             </span>
           </div>
         </div>
-
         
       </div>
 
@@ -260,5 +260,23 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 500,
     color: "#94a3b8",
     marginLeft: 6,
+  },
+
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+
+  fleetSelect: {
+    background: "#1f2937",
+    color: "#f8fafc",
+    border: "1px solid #374151",
+    borderRadius: 8,
+    padding: "4px 10px",
+    fontSize: 12,
+    cursor: "pointer",
+    outline: "none",
   },
 };
