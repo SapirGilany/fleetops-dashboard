@@ -164,7 +164,7 @@ export class RobotLifecycleService {
 
     log("INFO", `Robot ${robot.id} -> idle`);
 
-    availableRobots.push(robot.id);
+    this.onRobotAvailable?.(robot.id);
   }
 
   private registerTimeout(timeout: ReturnType<typeof setTimeout>) {
