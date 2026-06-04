@@ -31,19 +31,6 @@ export class SimulationService {
 
   }
 
-  stop() {
-    if (!this.isRunning) return;
-
-    this.isRunning = false;
-
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = undefined;
-    }
-
-    log("INFO", "Simulation stopped");
-  }
-
   reset() {
     if (this.interval) {
       clearInterval(this.interval);

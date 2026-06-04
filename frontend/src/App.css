@@ -1,0 +1,87 @@
+.page {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.start-btn {
+  padding: 8px 14px;
+  background: #22c55e;
+  border: none;
+  color: white;
+  border-radius: 6px;
+}
+
+.reset-btn {
+  padding: 8px 14px;
+  background: #ef4444;
+  border: none;
+  color: white;
+  border-radius: 6px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.card-label {
+  color: #94a3b8;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.card-sub-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-left: 6px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.fleet-select {
+  background: #1f2937;
+  color: #f8fafc;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}

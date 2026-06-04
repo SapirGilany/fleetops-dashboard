@@ -9,6 +9,7 @@ import {
 import RobotsTable from "./components/RobotsTable";
 import type { Robot } from "./types/robot";
 import type { SystemStatus } from "./types/robot";
+import "./App.css";
 
 function App() {
   const [robots, setRobots] = useState<Robot[]>([]);
@@ -67,14 +68,14 @@ const handleStart = async () => {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>
+    <div className="page">
+      <div className="header">
         <h2>FleetOps Dashboard</h2>
 
-        <div style={styles.buttons}>
+        <div className="buttons">
           <button
+            className="start-btn"
             style={{
-              ...styles.startBtn,
               opacity: isRunning ? 0.5 : 1,
               cursor: isRunning ? "not-allowed" : "pointer",
             }}
@@ -85,8 +86,8 @@ const handleStart = async () => {
           </button>
 
           <button
+            className="reset-btn"
             style={{
-              ...styles.resetBtn,
               opacity: !isRunning ? 0.5 : 1,
               cursor: !isRunning ? "not-allowed" : "pointer",
             }}
@@ -99,12 +100,12 @@ const handleStart = async () => {
       </div>
 
       {/* SYSTEM STATS */}
-      <div style={styles.statsGrid}>
-        <div style={styles.card}>
-          <div style={styles.cardLabel}>STATUS</div>
+      <div className="stats-grid">
+        <div className="card">
+          <div className="card-label">STATUS</div>
           <div
+            className="card-value"
             style={{
-              ...styles.cardValue,
               color: isRunning ? "#22c55e" : "#ef4444",
             }}
           >
@@ -112,9 +113,9 @@ const handleStart = async () => {
           </div>
         </div>
 
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>
-            <div style={styles.cardLabel}>
+        <div className="card">
+          <div className="card-header">
+            <div className="card-label">
               AVAILABLE ROBOTS
             </div>
 
@@ -124,7 +125,7 @@ const handleStart = async () => {
                 setFleetSize(Number(e.target.value))
               }
               disabled={isRunning}
-              style={styles.fleetSelect}
+              className="fleet-select"
             >
               {(system?.fleetOptions ?? []).map(
                 (size: number) => (
@@ -136,9 +137,9 @@ const handleStart = async () => {
             </select>
           </div>
 
-          <div style={styles.cardValue}>
+          <div className="card-value">
             {system?.availableRobots ?? 0}
-            <span style={styles.cardSubValue}>
+            <span className="card-sub-value">
               / {system?.totalRobots ?? robots.length}
             </span>
           </div>
@@ -147,38 +148,38 @@ const handleStart = async () => {
       </div>
 
       {/* MISSIONS STATS (separate row) */}
-      <div style={styles.statsGrid}>
-        <div style={styles.card}>
-          <div style={styles.cardLabel}>TOTAL MISSIONS</div>
-          <div style={styles.cardValue}>
+      <div className="stats-grid">
+        <div className="card">
+          <div className="card-label">TOTAL MISSIONS</div>
+          <div className="card-value">
             {system?.totalMissions ?? 0}
           </div>
         </div>
 
-        <div style={styles.card}>
-          <div style={styles.cardLabel}>ACTIVE MISSIONS</div>
-          <div style={styles.cardValue}>
+        <div className="card">
+          <div className="card-label">ACTIVE MISSIONS</div>
+          <div className="card-value">
             {system?.activeMissions ?? 0}
           </div>
         </div>
 
-        <div style={styles.card}>
-          <div style={styles.cardLabel}>PENDING MISSIONS</div>
-          <div style={styles.cardValue}>
+        <div className="card">
+          <div className="card-label">PENDING MISSIONS</div>
+          <div className="card-value">
             {system?.pendingMissions ?? 0}
           </div>
         </div>
 
-        <div style={styles.card}>
-          <div style={styles.cardLabel}>CANCELLED MISSIONS</div>
-          <div style={styles.cardValue}>
+        <div className="card">
+          <div className="card-label">CANCELLED MISSIONS</div>
+          <div className="card-value">
             {system?.cancelledMissions ?? 0}
           </div>
         </div>
 
-        <div style={styles.card}>
-          <div style={styles.cardLabel}>COMPLETED MISSIONS</div>
-          <div style={styles.cardValue}>
+        <div className="card">
+          <div className="card-label">COMPLETED MISSIONS</div>
+          <div className="card-value">
             {system?.completedMissions ?? 0}
           </div>
         </div>
@@ -191,92 +192,83 @@ const handleStart = async () => {
 
 export default App;
 
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    fontFamily: "Arial",
-    background: "#0f172a",
-    color: "white",
-    minHeight: "100vh",
-    padding: 20,
-    boxSizing: "border-box",
-  },
+// const styles: Record<string, React.CSSProperties> = {
+//   header: {
+//     display: "flex",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     marginBottom: 20,
+//   },
 
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
+//   buttons: {
+//     display: "flex",
+//     gap: 10,
+//   },
 
-  buttons: {
-    display: "flex",
-    gap: 10,
-  },
+//   startBtn: {
+//     padding: "8px 14px",
+//     background: "#22c55e",
+//     border: "none",
+//     color: "white",
+//     borderRadius: 6,
+//   },
 
-  startBtn: {
-    padding: "8px 14px",
-    background: "#22c55e",
-    border: "none",
-    color: "white",
-    borderRadius: 6,
-  },
+//   resetBtn: {
+//     padding: "8px 14px",
+//     background: "#ef4444",
+//     border: "none",
+//     color: "white",
+//     borderRadius: 6,
+//   },
 
-  resetBtn: {
-    padding: "8px 14px",
-    background: "#ef4444",
-    border: "none",
-    color: "white",
-    borderRadius: 6,
-  },
+//   statsGrid: {
+//     display: "grid",
+//     gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+//     gap: 16,
+//     marginBottom: 16,
+//   },
 
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: 16,
-    marginBottom: 16,
-  },
+//   card: {
+//     background: "#111827",
+//     border: "1px solid #1f2937",
+//     borderRadius: 14,
+//     padding: 18,
+//   },
 
-  card: {
-    background: "#111827",
-    border: "1px solid #1f2937",
-    borderRadius: 14,
-    padding: 18,
-  },
+//   cardLabel: {
+//     color: "#94a3b8",
+//     fontSize: 11,
+//     letterSpacing: "0.12em",
+//     marginBottom: 10,
+//   },
 
-  cardLabel: {
-    color: "#94a3b8",
-    fontSize: 11,
-    letterSpacing: "0.12em",
-    marginBottom: 10,
-  },
+//   cardValue: {
+//     fontSize: 28,
+//     fontWeight: 700,
+//   },
 
-  cardValue: {
-    fontSize: 28,
-    fontWeight: 700,
-  },
+//   cardSubValue: {
+//     fontSize: 14,
+//     fontWeight: 500,
+//     color: "#94a3b8",
+//     marginLeft: 6,
+//   },
 
-  cardSubValue: {
-    fontSize: 14,
-    fontWeight: 500,
-    color: "#94a3b8",
-    marginLeft: 6,
-  },
+//   cardHeader: {
+//     display: "flex",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     marginBottom: 10,
+//   },
 
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-
-  fleetSelect: {
-    background: "#1f2937",
-    color: "#f8fafc",
-    border: "1px solid #374151",
-    borderRadius: 8,
-    padding: "4px 10px",
-    fontSize: 12,
-    cursor: "pointer",
-    outline: "none",
-  },
-};
+//   fleetSelect: {
+//     background: "#1f2937",
+//     color: "#f8fafc",
+//     border: "1px solid #374151",
+//     borderRadius: 8,
+//     padding: "4px 10px",
+//     fontSize: 12,
+//     cursor: "pointer",
+//     outline: "none",
+//   },
+// };
