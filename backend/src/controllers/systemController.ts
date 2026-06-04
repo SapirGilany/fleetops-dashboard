@@ -21,7 +21,7 @@ export class SystemController {
       availableRobots: availableRobots.length,
       busyRobots:
         robots.size - availableRobots.length,
-      totalMissions: missions.size + pendingMissions.length,
+      totalMissions: missions.size,
       activeMissions,
       pendingMissions: pendingMissions.length,
       cancelledMissions: stats.cancelledMissions,

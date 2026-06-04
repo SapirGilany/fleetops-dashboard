@@ -5,14 +5,15 @@ import { log } from "../utils/logger.js";
 let missionCounter = 1;
 
 export class MissionService {
-  createMission(robotId: string): Mission {
+  createMission(): Mission {
     const mission: Mission = {
       id: `mission-${missionCounter++}`,
       createdAt: Date.now(),
-      robotId,
+      robotId: null,
     };
 
     missions.set(mission.id, mission);
+
     log("INFO", `Created mission ${mission.id}`);
 
     return mission;
