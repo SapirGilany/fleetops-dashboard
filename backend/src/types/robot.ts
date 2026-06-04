@@ -17,3 +17,11 @@ export interface Robot {
   state: RobotState;
   currentTimeout?: ReturnType<typeof setTimeout>;
 }
+
+export const isCancellableStatus = (status: RobotStatus): boolean => {
+  return (
+    status === "assigned" ||
+    status === "en_route" ||
+    status === "delivering"
+  );
+};

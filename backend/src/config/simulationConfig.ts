@@ -1,6 +1,6 @@
 export const simulationConfig = {
   missionGeneration: {
-    intervalMs: 20_000, // every 60 seconds
+    intervalMs: 5_000, // every 60 seconds
     batchSize: 2, // number of missions per cycle
   },
 

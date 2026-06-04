@@ -2,6 +2,7 @@ import { simulationConfig } from "../config/simulationConfig.js";
 import { availableRobots, robots, stats } from "../data/store.js";
 import type { Mission } from "../types/mission.js";
 import type { Robot } from "../types/robot.js";
+import { isCancellableStatus } from "../types/robot.js";
 import { log } from "../utils/logger.js";
 import { simulationService } from "./SimulationService.js";
 
@@ -144,7 +145,7 @@ export class RobotLifecycleService {
    * Cancels the current mission immediately.
    */
   cancelMission(robot: Robot) {
-    if (robot.state.status === "idle") {
+    if (!isCancellableStatus(robot.state.status)) {
       return;
     }
 
@@ -161,6 +162,8 @@ export class RobotLifecycleService {
     };
 
     stats.cancelledMissions++;
+
+    log("WARN", `Robot ${robot.id} -> mission cancelled`);
 
     log("INFO", `Robot ${robot.id} -> idle`);
 
