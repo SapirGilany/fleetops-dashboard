@@ -1,4 +1,4 @@
-import { missions } from "../data/store.js";
+import { missions, stats } from "../data/store.js";
 import type { Mission } from "../types/mission.js";
 import { log } from "../utils/logger.js";
 
@@ -19,7 +19,10 @@ export class MissionService {
   }
 
   reset() {
+    missions.clear();
     missionCounter = 1;
+    stats.completedMissions = 0;
+    stats.cancelledMissions = 0;
   }
 }
 

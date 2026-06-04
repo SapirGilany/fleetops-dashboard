@@ -1,69 +1,73 @@
 import { robotService } from "../services/RobotService.js";
 import { robotLifecycleService } from "../services/RobotLifecycleService.js";
 
-
-
 export class RobotsController {
-    getAllRobots() {
-        const robots = robotService.getAllRobots();
+  getAllRobots() {
+    const robots = robotService.getAllRobots();
 
-        return robots.map((robot) => {
-        const elapsed =
-            Date.now() - robot.state.startedAt;
+    return robots.map((robot) => {
+      const elapsed =
+        Date.now() - robot.state.startedAt;
 
-        const remainingTimeMs = Math.max(
-            robot.state.durationMs - elapsed,
-            0
-        );
+      const remainingTimeMs = Math.max(
+        robot.state.durationMs - elapsed,
+        0
+      );
 
-        return {
-            id: robot.id,
-            status: robot.state.status,
-            missionId: robot.missionId,
-            remainingTimeMs,
-        };
-        });
+      return {
+        id: robot.id,
+        missionId: robot.missionId,
+
+        // 👇 KEEP ORIGINAL STRUCTURE (IMPORTANT)
+        state: robot.state,
+
+        // 👇 extra computed field for UI
+        remainingTimeMs,
+      };
+    });
+  }
+
+  getRobotById(id: string) {
+    const robot = robotService.getRobot(id);
+
+    if (!robot) {
+      return null;
     }
 
-    getRobotById(id: string) {
-        const robot = robotService.getRobot(id);
+    const elapsed =
+      Date.now() - robot.state.startedAt;
 
-        if (!robot) {
-            return null;
-        }
+    const remainingTimeMs = Math.max(
+      robot.state.durationMs - elapsed,
+      0
+    );
 
-        const elapsed =
-            Date.now() - robot.state.startedAt;
+    return {
+      id: robot.id,
+      missionId: robot.missionId,
 
-        const remainingTimeMs = Math.max(
-            robot.state.durationMs - elapsed,
-            0
-        );
+      // keep full state
+      state: robot.state,
 
-        return {
-            id: robot.id,
-            status: robot.state.status,
-            missionId: robot.missionId,
-            remainingTimeMs,
-        };
+      // computed UI helper
+      remainingTimeMs,
+    };
+  }
+
+  cancelMission(robotId: string) {
+    const robot = robotService.getRobot(robotId);
+
+    if (!robot) {
+      return null;
     }
 
-    cancelMission(robotId: string) {
-        const robot = robotService.getRobot(robotId);
+    robotLifecycleService.cancelMission(robot);
 
-        if (!robot) {
-            return null;
-        }
-
-        robotLifecycleService.cancelMission(robot);
-
-        return {
-            robotId: robot.id,
-            message: "Mission cancelled",
-        };
-    }
-
+    return {
+      robotId: robot.id,
+      message: "Mission cancelled",
+    };
+  }
 }
 
-export const robotsController =
-  new RobotsController();
+export const robotsController = new RobotsController();

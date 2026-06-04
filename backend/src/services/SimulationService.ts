@@ -2,6 +2,8 @@ import {
   availableRobots,
   pendingMissions,
   robots,
+  missions,
+  stats,
 } from "../data/store.js";
 
 import { simulationConfig } from "../config/simulationConfig.js";
@@ -149,6 +151,23 @@ export class SimulationService {
       robot,
       pendingMission
     );
+  }
+
+  getSystemStats() {
+    const activeMissions = Array.from(
+      robots.values()
+    ).filter(
+      r =>
+        r.missionId &&
+        r.state.status !== "idle"
+    ).length;
+
+    return {
+      totalMissions: missions.size,
+      completedMissions: stats.completedMissions,
+      pendingMissions: pendingMissions.length,
+      activeMissions,
+    };
   }
 }
 

@@ -20,4 +20,16 @@ export const resetSimulation = async () => {
   await fetch("http://localhost:3001/simulation/reset", {
     method: "POST",
   });
-};
+}
+
+export async function cancelRobotMission(robotId: string) {
+  const res = await fetch(`http://localhost:3001/robots/${robotId}/cancel`, {
+    method: "POST",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to cancel mission");
+  }
+
+  return res.json();
+}

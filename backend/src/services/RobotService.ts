@@ -9,7 +9,7 @@ export class RobotService {
         missionId: null,
         state: {
           status: "idle",
-          startedAt: Date.now(),
+          startedAt: 0,
           durationMs: 0,
         },
       };
@@ -37,7 +37,7 @@ export class RobotService {
         missionId: null,
         state: {
           status: "idle",
-          startedAt: Date.now(),
+          startedAt: 0,
           durationMs: 0,
         },
       };

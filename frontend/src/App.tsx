@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   fetchRobots,
   fetchSystem,
@@ -6,29 +6,30 @@ import {
   resetSimulation,
 } from "./api/fleetApi";
 
+import RobotsTable from "./components/RobotsTable";
+
 function App() {
   const [robots, setRobots] = useState<any[]>([]);
-  const [system, setSystem] = useState<any>({ pendingMissions: 0 });
+  const [system, setSystem] = useState<any>({});
   const [isRunning, setIsRunning] = useState(false);
 
-  // חשוב מאוד לפולינג
   const isRunningRef = useRef(false);
 
+  const loadData = useCallback(async () => {
+    try {
+      const [robotsData, systemData] = await Promise.all([
+        fetchRobots(),
+        fetchSystem(),
+      ]);
+
+      setRobots(robotsData ?? []);
+      setSystem(systemData ?? {});
+    } catch (err) {
+      console.error("Failed to load data:", err);
+    }
+  }, []);
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [robotsData, systemData] = await Promise.all([
-          fetchRobots(),
-          fetchSystem(),
-        ]);
-
-        setRobots(robotsData ?? []);
-        setSystem(systemData ?? { pendingMissions: 0 });
-      } catch (err) {
-        console.error("Failed to load data:", err);
-      }
-    };
-
     loadData();
 
     const interval = window.setInterval(() => {
@@ -38,7 +39,7 @@ function App() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [loadData]);
 
   const handleStart = async () => {
     await startSimulation();
@@ -50,75 +51,113 @@ function App() {
     await resetSimulation();
     isRunningRef.current = false;
     setIsRunning(false);
-    setRobots([]);
-    setSystem({ pendingMissions: 0 });
+    await loadData();
   };
 
   return (
     <div style={styles.page}>
-      {/* HEADER */}
       <div style={styles.header}>
-        <h2>🚀 FleetOps Dashboard</h2>
+        <h2>FleetOps Dashboard</h2>
 
         <div style={styles.buttons}>
-          <button style={styles.startBtn} onClick={handleStart}>
+          <button
+            style={{
+              ...styles.startBtn,
+              opacity: isRunning ? 0.5 : 1,
+              cursor: isRunning ? "not-allowed" : "pointer",
+            }}
+            onClick={handleStart}
+            disabled={isRunning}
+          >
             Start
           </button>
 
-          <button style={styles.resetBtn} onClick={handleReset}>
+          <button
+            style={{
+              ...styles.resetBtn,
+              opacity: !isRunning ? 0.5 : 1,
+              cursor: !isRunning ? "not-allowed" : "pointer",
+            }}
+            onClick={handleReset}
+            disabled={!isRunning}
+          >
             Reset
           </button>
         </div>
       </div>
 
-      {/* STATUS */}
-      <div style={styles.statusBar}>
-        <span>
-          Status:{" "}
-          <b style={{ color: isRunning ? "#22c55e" : "#ef4444" }}>
+      {/* SYSTEM STATS */}
+      <div style={styles.statsGrid}>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>STATUS</div>
+          <div
+            style={{
+              ...styles.cardValue,
+              color: isRunning ? "#22c55e" : "#ef4444",
+            }}
+          >
             {isRunning ? "RUNNING" : "STOPPED"}
-          </b>
-        </span>
+          </div>
+        </div>
 
-        <span>Robots: {robots.length}</span>
-        <span>Missions: {system?.pendingMissions ?? 0}</span>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>AVAILABLE ROBOTS</div>
+
+          <div style={styles.cardValue}>
+            {system?.availableRobots ?? 0}
+            <span style={styles.cardSubValue}>
+              / {system?.totalRobots ?? robots.length}
+            </span>
+          </div>
+        </div>
+
+        
       </div>
 
-      {/* TABLE */}
-      <div style={styles.tableBox}>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={thStyle}>ID</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle}>Mission</th>
-            </tr>
-          </thead>
+      {/* MISSIONS STATS (separate row) */}
+      <div style={styles.statsGrid}>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>TOTAL MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.totalMissions ?? 0}
+          </div>
+        </div>
 
-          <tbody>
-            {robots.map((r) => (
-              <tr key={r.id} style={rowStyle}>
-                <td style={tdStyle}>{r.id}</td>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>ACTIVE MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.activeMissions ?? 0}
+          </div>
+        </div>
 
-                <td style={tdStyle}>
-                  <span style={getStatusStyle(r.status)}>
-                    {r.status ?? "unknown"}
-                  </span>
-                </td>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>PENDING MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.pendingMissions ?? 0}
+          </div>
+        </div>
 
-                <td style={tdStyle}>{r.missionId ?? "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>CANCELLED MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.cancelledMissions ?? 0}
+          </div>
+        </div>
+
+        <div style={styles.card}>
+          <div style={styles.cardLabel}>COMPLETED MISSIONS</div>
+          <div style={styles.cardValue}>
+            {system?.completedMissions ?? 0}
+          </div>
+        </div>
       </div>
+
+      <RobotsTable robots={robots} onRefresh={loadData} />
     </div>
   );
 }
 
 export default App;
-
-/* ---------------- styles ---------------- */
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
@@ -127,6 +166,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: "white",
     minHeight: "100vh",
     padding: 20,
+    boxSizing: "border-box",
   },
 
   header: {
@@ -147,7 +187,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: "none",
     color: "white",
     borderRadius: 6,
-    cursor: "pointer",
   },
 
   resetBtn: {
@@ -156,60 +195,38 @@ const styles: Record<string, React.CSSProperties> = {
     border: "none",
     color: "white",
     borderRadius: 6,
-    cursor: "pointer",
   },
 
-  statusBar: {
-    display: "flex",
-    gap: 20,
-    padding: 12,
+  statsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    gap: 16,
+    marginBottom: 16,
+  },
+
+  card: {
     background: "#111827",
-    borderRadius: 8,
-    marginBottom: 20,
+    border: "1px solid #1f2937",
+    borderRadius: 14,
+    padding: 18,
   },
 
-  tableBox: {
-    background: "#111827",
-    padding: 16,
-    borderRadius: 10,
+  cardLabel: {
+    color: "#94a3b8",
+    fontSize: 11,
+    letterSpacing: "0.12em",
+    marginBottom: 10,
   },
 
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
+  cardValue: {
+    fontSize: 28,
+    fontWeight: 700,
+  },
+
+  cardSubValue: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: "#94a3b8",
+    marginLeft: 6,
   },
 };
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: 10,
-  borderBottom: "1px solid #1f2937",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: 10,
-  borderTop: "1px solid #1f2937",
-};
-
-const rowStyle: React.CSSProperties = {
-  transition: "0.2s",
-};
-
-/* status colors */
-function getStatusStyle(status?: string): React.CSSProperties {
-  const map: Record<string, string> = {
-    idle: "#94a3b8",
-    assigned: "#38bdf8",
-    en_route: "#f59e0b",
-    delivering: "#a78bfa",
-    completed: "#22c55e",
-  };
-
-  return {
-    padding: "4px 8px",
-    borderRadius: 6,
-    background: map[status || ""] || "#64748b",
-    color: "black",
-    fontSize: 12,
-  };
-}
