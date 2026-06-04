@@ -77,25 +77,59 @@ src/
 ### Requirements
 
 - Node.js 18+
-- npm or yarn
+- npm (or yarn)
 
 ### Installation
 
+Install dependencies for both applications.
+
+#### Backend
+
 ```bash
+cd backend
 npm install
 ```
 
-### Run Development Server
+#### Frontend
 
 ```bash
+cd frontend
+npm install
+```
+
+### Running the Application
+
+Start the backend server:
+
+```bash
+cd backend
 npm run dev
 ```
 
-Server runs at:
+Backend API:
 
-```
+```text
 http://localhost:3001
 ```
+
+Start the frontend application in a separate terminal:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Frontend UI:
+
+```text
+http://localhost:5173
+```
+
+### Notes
+
+- The backend must be running before starting a simulation.
+- The frontend communicates with the backend through the REST API.
+- Both applications should be running simultaneously during development.
 
 ---
 
@@ -506,6 +540,7 @@ The backend is designed to be stateless in AWS:
 * WebSocket real-time updates
 * Persistent database for missions
 * Allow operators to modify runtime settings directly from the dashboard
-* Distributed worker architecture
 * Retry/failure handling
+* Deterministic Simulation via Seeding - Introduce a seed-based random generator to allow reproducible simulation runs for testing, debugging, and performance evaluation.
+* Enhanced State Observability - Extend robot state models with real-time progress tracking (e.g., remaining time per state), enabling a more transparent and real-time operational dashboard experience.
 
