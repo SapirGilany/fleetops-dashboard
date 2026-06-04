@@ -17,11 +17,7 @@ export class RobotsController {
       return {
         id: robot.id,
         missionId: robot.missionId,
-
-        // 👇 KEEP ORIGINAL STRUCTURE (IMPORTANT)
         state: robot.state,
-
-        // 👇 extra computed field for UI
         remainingTimeMs,
       };
     });

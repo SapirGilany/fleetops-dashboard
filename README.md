@@ -505,7 +505,7 @@ The backend is designed to be stateless in AWS:
 
 * WebSocket real-time updates
 * Persistent database for missions
-* Explicit mission state field
+* Allow operators to modify runtime settings directly from the dashboard
 * Distributed worker architecture
 * Retry/failure handling
 
