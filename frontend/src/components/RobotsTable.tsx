@@ -1,5 +1,6 @@
 import { cancelRobotMission } from "../api/fleetApi";
 import type { Robot } from "../types/robot";
+import { useState } from "react";
 
 type Props = {
   robots: Robot[];
@@ -12,9 +13,54 @@ export default function RobotsTable({ robots, onRefresh }: Props) {
     onRefresh();
   };
 
+  const [statusFilter, setStatusFilter] =
+  useState<string>("all");
+
+  const filteredRobots = robots.filter(
+    (robot) =>
+      statusFilter === "all" ||
+      robot.state.status === statusFilter
+  );
+
   return (
     <div style={styles.wrapper}>
-      <div style={styles.title}>Robots Fleet</div>
+      <div style={styles.header}>
+        <div style={styles.title}>
+          Robots Fleet
+        </div>
+
+        <select
+          value={statusFilter}
+          onChange={(e) =>
+            setStatusFilter(e.target.value)
+          }
+          style={styles.filterSelect}
+        >
+          <option value="all">
+            All Robots
+          </option>
+
+          <option value="idle">
+            Idle
+          </option>
+
+          <option value="assigned">
+            Assigned
+          </option>
+
+          <option value="en_route">
+            En Route
+          </option>
+
+          <option value="delivering">
+            Delivering
+          </option>
+
+          <option value="completed">
+            Completed
+          </option>
+        </select>
+      </div>
 
       <table style={styles.table}>
         <thead>
@@ -27,7 +73,7 @@ export default function RobotsTable({ robots, onRefresh }: Props) {
         </thead>
 
         <tbody>
-          {robots.map((r) => (
+          {filteredRobots.map((r) => (
             <tr key={r.id} style={styles.row}>
               <td style={styles.td}>{r.id}</td>
 
@@ -109,6 +155,24 @@ const styles: Record<string, React.CSSProperties> = {
     color: "white",
     fontSize: 12,
   },
+
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  filterSelect: {
+    background: "#111827",
+    color: "#e5e7eb",
+    border: "1px solid #374151",
+    borderRadius: 8,
+    padding: "6px 10px",
+    fontSize: 13,
+    cursor: "pointer",
+  },
+
 };
 
 /* badge */
