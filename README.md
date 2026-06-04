@@ -43,7 +43,7 @@ src/
 - types/         # TypeScript interfaces
 - utils/         # Logger and helpers
 - bootstrap.ts   # System initialization
-````
+```
 
 ### Frontend Structure
 
@@ -53,7 +53,7 @@ src/
 - components/    # UI components (tables, cards, etc.)
 - types/         # TypeScript interfaces
 - App.tsx        # Main dashboard logic
-````
+```
 
 ---
 
@@ -68,7 +68,7 @@ src/
 
 ```bash
 npm install
-````
+```
 
 ### Run Development Server
 
@@ -182,7 +182,7 @@ G --> J{Pending missions exist?}
 J -->|Yes| K[Assign next mission]
 J -->|No| L[Robot stays IDLE]
 K --> C
-````
+```
 ---
 
 ## Timing Model
@@ -336,6 +336,155 @@ The dashboard separates:
 
 ---
 
+## AWS Architecture (Theoretical Design)
+
+This section describes a high-level cloud architecture design for deploying the FleetOps simulation system in AWS.
+
+> Note: This is a theoretical design only. No actual deployment has been implemented.
+
+---
+
+### Overview
+
+The system is split into two main parts:
+
+- Frontend: React-based dashboard for real-time visualization
+- Backend: Node.js simulation engine managing robots and missions
+
+The goal is to deploy a scalable, production-ready architecture using AWS managed services.
+
+---
+
+### AWS Services Breakdown
+
+#### 1. Frontend Hosting
+
+- Amazon S3 (Static Website Hosting)
+- Amazon CloudFront (CDN)
+
+**Reasoning:**
+The React application is a static build. It is stored in an S3 bucket and served globally using CloudFront for low latency and caching.
+
+---
+
+#### 2. Backend Deployment
+
+- Amazon ECS (Elastic Container Service)
+- AWS Fargate (serverless container runtime)
+- Application Load Balancer (ALB)
+
+**Reasoning:**
+The backend runs as a Docker container. ECS with Fargate is preferred over EKS for simplicity and reduced operational overhead.
+
+The ALB routes incoming HTTP traffic (port 80/443) to backend containers.
+
+---
+
+#### 3. Networking
+
+- Application Load Balancer (ALB)
+
+**Reasoning:**
+Handles routing between frontend API requests and backend services. Enables scaling and health checks.
+
+---
+
+#### 4. Database Layer (Future Extension)
+
+- Amazon RDS (PostgreSQL)
+- AWS Secrets Manager
+
+**Reasoning:**
+Although the current system uses in-memory storage, a production version would require persistence:
+
+- RDS stores robots, missions, and system state
+- Secrets Manager securely stores DB credentials
+
+---
+
+#### 5. CI/CD Pipeline
+
+- GitHub Actions
+- Amazon ECR (Elastic Container Registry)
+- ECS Deployment via task updates
+
+**Flow:**
+
+1. Backend:
+   - Build Docker image
+   - Push to Amazon ECR
+   - Deploy new ECS task via GitHub Actions
+
+2. Frontend:
+   - Build React app
+   - Upload build artifacts to S3
+   - Invalidate CloudFront cache
+
+---
+
+#### 6. Environments
+
+- Separate AWS accounts or environments:
+  - Development
+  - Production
+
+**Reasoning:**
+Isolation between environments ensures safety, stability, and controlled deployments.
+
+---
+
+### High-Level Communication Flow
+
+```bash
+Client (React)
+↓
+CloudFront
+↓
+S3 (static files)
+
+Client API calls
+↓
+API Gateway / ALB
+↓
+ECS Backend (Node.js)
+↓
+(Optional) RDS Database
+```
+
+
+---
+
+### Key Architectural Decisions
+
+### ECS over EKS
+ECS was chosen instead of Kubernetes (EKS) because:
+- Lower complexity
+- No need for orchestration overhead
+- Suitable for a single backend service
+
+---
+
+#### Stateless Backend Design
+The backend is designed to be stateless in AWS:
+- Simulation state can be moved to RDS or in-memory per container
+- Horizontal scaling is possible using multiple ECS tasks
+
+---
+
+#### Scalability Considerations
+- CloudFront handles global frontend scaling
+- ECS allows backend horizontal scaling
+- ALB distributes load between containers
+
+---
+
+### Optional Improvements (Future Work)
+
+- Add Redis (ElastiCache) for real-time queue management
+- Use WebSockets (API Gateway or ALB) for live robot updates
+- Add observability with CloudWatch + X-Ray
+
+---
 
 ## Future Improvements
 
