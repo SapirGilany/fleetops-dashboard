@@ -1,11 +1,26 @@
 # FleetOps Simulation System
 
-````md
-![Node.js](https://img.shields.io/badge/Node.js-18+-green)
-![TypeScript](https://img.shields.io/badge/TypeScript-enabled-blue)
-![Architecture](https://img.shields.io/badge/architecture-event--driven-orange)
-![State](https://img.shields.io/badge/state-in--memory-yellow)
-````
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Project Structures](#project-structure)
+3. [Setup Instructions](#setup-instructions)
+4. [API Endpoints](#api-endpoints)
+5. [System Architecture](#system-architecture)
+6. [Simulation Logic](#simulation-logic)
+7. [Mission Lifecycle](#mission-lifecycle)
+8. [State Machine & Scheduling Flow](#state-machine--scheduling-flow)
+   - [Timing Model](#timing-model)
+   - [Mission Assignment Flow](#mission-assignment-flow)
+   - [Pending Queue](#pending-queue)
+   - [Cancellation Flow](#cancellation-flow)
+   - [System State Model](#system-state-model)
+   - [System Statistics](#system-statistics)
+9. [Design Decisions](#design-decisions)
+10. [Scalability Considerations](#scalability-considerations)
+11. [Frontend Dashboard](#frontend-dashboard)
+12. [AWS Architecture (Theoretical Design)](#aws-architecture-theoretical-design)
+13. [Future Enhancements](#future-enhancements)
 ---
 
 ## Overview
@@ -185,7 +200,7 @@ K --> C
 ```
 ---
 
-## Timing Model
+### Timing Model
 
 Each state transition uses:
 
@@ -197,7 +212,7 @@ This simulates real-world asynchronous behavior.
 
 ---
 
-## Mission Assignment Flow
+### Mission Assignment Flow
 
 ```
 Mission Generated
@@ -211,7 +226,7 @@ Check available robots
 
 ---
 
-## Pending Queue
+### Pending Queue
 
 * FIFO queue
 * Stores unassigned missions
@@ -219,7 +234,7 @@ Check available robots
 
 ---
 
-## Cancellation Flow
+### Cancellation Flow
 
 ```
 Active Mission
@@ -239,7 +254,7 @@ Pending queue checked automatically
 
 ---
 
-## System State Model
+### System State Model
 
 Each robot contains:
 
@@ -250,7 +265,7 @@ Each robot contains:
 
 ---
 
-## System Statistics
+### System Statistics
 
 * totalRobots
 * availableRobots
@@ -486,7 +501,7 @@ The backend is designed to be stateless in AWS:
 
 ---
 
-## Future Improvements
+## Future Enhancements
 
 * WebSocket real-time updates
 * Persistent database for missions
